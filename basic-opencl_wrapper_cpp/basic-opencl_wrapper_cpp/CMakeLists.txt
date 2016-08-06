@@ -13,6 +13,10 @@ include(OpenCL)
 # add compiler version
 add_compile_options(-std=c++11)
 
+# add utility header files
+SET(UTILITY_HDR_FILES
+    utility/cmdutility.h)
+
 # set sources
 aux_source_directory(. SRC_LIST)
 
@@ -23,4 +27,4 @@ include_directories(utility)
 target_link_libraries(${OPENCL_LIBRARY})
 
 # create executable
-add_executable(${PROJECT_NAME} ${SRC_LIST})
+add_executable(${PROJECT_NAME} ${SRC_LIST} ${UTILITY_HDR_FILES})
