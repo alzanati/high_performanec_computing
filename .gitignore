@@ -1,2 +1,5 @@
 # build files
-build-basic-opencl_wrapper_cpp-Desktop_Qt_5_7_0_GCC_64bit-Default/
+[build]/
+
+# cmake user files
+*.user
