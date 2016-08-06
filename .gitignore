@@ -1,5 +1,5 @@
 # build files
-[build]/
+build[*]/
 
 # cmake user files
 *.user
