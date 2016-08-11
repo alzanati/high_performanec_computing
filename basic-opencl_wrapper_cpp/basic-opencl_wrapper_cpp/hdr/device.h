@@ -11,6 +11,8 @@ public:
 
     ClDevice(const cl::Platform &platform);
 
+    ClDevice(const ClDevice& device) : devices_(device.devices_) {}
+
     virtual const cl::Device getDevice() const;
 
     const cl::STRING_CLASS builtInKernels() const;
