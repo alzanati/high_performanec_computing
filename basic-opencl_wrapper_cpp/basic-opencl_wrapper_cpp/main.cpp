@@ -1,26 +1,18 @@
 #include <iostream>
 #include <memory>
 #include <typeinfo>
-#include <CL/cl.h>
-#include <CL/cl.hpp>
+#include <dbg.h>
+#include <cmdutility.h>
+#include <platform.h>
 
 template< class T >
-const inline void println(T data) {
-    std::cout << "\033[1;32m" << data << "\033[0m\n";
-}
-
-const inline void printError(int err) {
-    std::cout << "\033[1;31m"\
-              << "Error code : "\
-              << err << "\033[0m\n";
+const inline void println (T data, utility::color::Code code) {
+    utility::Modifier color(code);
+    std::cout << color << data << CLOSE "\n";
 }
 
 int main (int argc, char *argv[]) {
-
-    VECTOR_CLASS<cl::Platform> platforms;
-    int err = cl::Platform::get(&platforms);
-    if (err < 0 )
-        printError(err);
-    println("Ahmed");
+    opencl::ClPlatform platform;
+    println(platform.name(), utility::color::Code::BG_GREEN);
     return 0;
 }

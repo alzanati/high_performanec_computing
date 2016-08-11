@@ -15,16 +15,36 @@ add_compile_options(-std=c++11)
 
 # add utility header files
 SET(UTILITY_HDR_FILES
-    utility/cmdutility.h)
+    utility/cmdutility.h
+    utility/dbg.h
+    utility/opencl-common.hpp)
+
+# add src files
+SET(SRC_FILES
+    src/cmdqueue.cpp
+    src/context.cpp
+    src/device.cpp
+    src/kernel.cpp
+    src/platform.cpp)
+
+# add header files
+SET(HDR_FILES
+    hdr/cmdqueue.h
+    hdr/context.h
+    hdr/device.h
+    hdr/kernel.h
+    hdr/platform.h)
 
 # set sources
 aux_source_directory(. SRC_LIST)
 
-# add utility folder
+# include dir to make include in files done without spacify folder name
 include_directories(utility)
+include_directories(src)
+include_directories(hdr)
 
 #link library
 target_link_libraries(${OPENCL_LIBRARY})
 
 # create executable
-add_executable(${PROJECT_NAME} ${SRC_LIST} ${UTILITY_HDR_FILES})
+add_executable(${PROJECT_NAME} ${SRC_LIST} ${UTILITY_HDR_FILES} ${SRC_FILES} ${HDR_FILES})

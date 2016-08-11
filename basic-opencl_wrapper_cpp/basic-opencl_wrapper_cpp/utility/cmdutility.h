@@ -15,17 +15,17 @@ enum Code {
     BG_BLUE     = 44,
     BG_DEFAULT  = 49
 };
+}
 
 class Modifier {
 private:
-    Code code;
+    color::Code code;
 public:
-    Modifier(Code code) : code(code) {}
-    operator<<(std::ostream& os, const Modifier& mod) {
+    Modifier(color::Code code) : code(code) {}
+    friend std::ostream& operator << (std::ostream& os, const Modifier& mod) {
         return os << "\033[" << mod.code << "m";
     }
 };
-}
 
 }
 
