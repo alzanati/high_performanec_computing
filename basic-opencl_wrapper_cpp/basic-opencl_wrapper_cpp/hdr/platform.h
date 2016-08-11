@@ -63,8 +63,8 @@ protected:
      * @param platformInfo
      * @return info relted to specific platform
      */
-    const cl::STRING_CLASS queuryInfo_ (cl::Platform platform,
-                                        cl_platform_info platformInfo) const;
+    virtual const cl::STRING_CLASS queuryInfo_ (cl::Platform platform,
+                                                cl_platform_info platformInfo) const;
 
 private:
     /**
@@ -77,6 +77,7 @@ private:
      */
     using platformPtr = std::shared_ptr<platformVector>;
 
+protected:
     /**
      * @brief smart pointer to platforms vector class
      */
