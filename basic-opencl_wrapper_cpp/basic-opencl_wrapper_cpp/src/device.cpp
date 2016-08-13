@@ -6,7 +6,7 @@ ClDevice::ClDevice (const cl::Platform &platform) {
     try {
         platform.getDevices(CL_DEVICE_TYPE_ALL, devices_.get());
     } catch (cl::Error e) {
-        log_err("%s", e.what());
+        log_err("%s, Error Code: %d", e.what(), e.err());
     }
 }
 
@@ -22,7 +22,7 @@ const cl::STRING_CLASS ClDevice::queryInfo_ (const cl::Device &device,
     try {
         device.getInfo( info, &tempInfo);
     } catch (cl::Error e) {
-        log_err("%s", e.what());
+        log_err("%s, Error Code: %d", e.what(), e.err());
     }
     return tempInfo;
 }
@@ -64,7 +64,7 @@ const VECTOR_CLASS<size_t> ClDevice::maxWorkItemsSize() const {
     try {
         this->getDevice().getInfo(CL_DEVICE_MAX_WORK_ITEM_SIZES, &dimensions);
     } catch (cl::Error e) {
-        log_err("%s", e.what());
+        log_err("%s, Error Code: %d", e.what(), e.err());
     }
     return dimensions;
 }

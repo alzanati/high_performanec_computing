@@ -6,8 +6,7 @@ ClPlatform::ClPlatform() {
     try{
         cl::Platform::get(platforms_.get());
     } catch (cl::Error e) {
-        char* err = const_cast<char*> (e.what());
-        log_err("%s", err);
+        log_err("%s, Error Code: %d", e.what(), e.err());
     }
 }
 
@@ -48,7 +47,7 @@ const cl::STRING_CLASS ClPlatform::queuryInfo_(cl::Platform platform,
     try {
         platform.getInfo(platformInfo, &info);
     } catch (cl::Error e) {
-        log_err("%s", e.what());
+        log_err("%s, Error Code: %d", e.what(), e.err());
     }
     return info;
 }

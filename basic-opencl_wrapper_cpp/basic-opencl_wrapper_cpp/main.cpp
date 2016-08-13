@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cmdutility.h>
-
 #include <device.h>
 #include <context.h>
+#include <pexception.h>
 
 using utility::color::Code;
 
@@ -35,5 +35,8 @@ int main (int argc, char *argv[]) {
         println(name, Code::FG_PURPPLE);
     }
 
+    /* test exception class */
+    exceptions::ClException excpt(-35);
+    std::cout << excpt.message() << std::endl;
     return 0;
 }

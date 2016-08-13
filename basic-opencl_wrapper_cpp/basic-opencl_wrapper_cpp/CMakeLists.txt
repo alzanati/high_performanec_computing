@@ -25,7 +25,8 @@ SET(SRC_FILES
     src/context.cpp
     src/device.cpp
     src/kernel.cpp
-    src/platform.cpp)
+    src/platform.cpp
+    src/program.cpp)
 
 # add header files
 SET(HDR_FILES
@@ -33,7 +34,9 @@ SET(HDR_FILES
     hdr/context.h
     hdr/device.h
     hdr/kernel.h
-    hdr/platform.h)
+    hdr/platform.h
+    hdr/program.h
+    hdr/pexception.h)
 
 # set sources
 aux_source_directory(. SRC_LIST)

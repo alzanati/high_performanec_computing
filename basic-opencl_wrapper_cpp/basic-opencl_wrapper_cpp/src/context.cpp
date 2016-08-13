@@ -9,7 +9,7 @@ ClContext::ClContext (const cl_device_type type,
         context_ = *sharedContext.get();
         context_ = context;
     } catch (cl::Error e) {
-        log_err("%s", e.what());
+        log_err("%s, Error Code: %d", e.what(), e.err());
     }
 }
 
@@ -20,7 +20,7 @@ ClContext::ClContext (const std::vector<cl::Device> &devices,
         context_ = *sharedContext.get();
         context_ = context;
     } catch (cl::Error e) {
-        log_err("%s", e.what());
+        log_err("%s, Error Code: %d", e.what(), e.err());
     }
 }
 
