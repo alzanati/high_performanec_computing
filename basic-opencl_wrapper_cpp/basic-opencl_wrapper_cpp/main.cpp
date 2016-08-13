@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
     }
 
     /* test exception class */
-    exceptions::ClException excpt(-35);
+    exceptions::ClException excpt(CL_DEVICE_NOT_AVAILABLE);
     std::cout << excpt.message() << std::endl;
     return 0;
 }

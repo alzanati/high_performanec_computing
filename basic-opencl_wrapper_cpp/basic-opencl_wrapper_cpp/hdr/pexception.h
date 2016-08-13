@@ -13,13 +13,10 @@ public:
      */
     ClException (const int& err)
         : errCode_(err) {
-        errorMap_.insert(paired(CL_INVALID_CONTEXT, "CL_INVALID_CONTEXT"));
-        errorMap_.insert(paired(CL_INVALID_VALUE, "CL_INVALID_VALUE"));
-        errorMap_.insert(paired(CL_INVALID_DEVICE, "CL_INVALID_DEVICE"));
         errorMap_.insert(paired(CL_INVALID_BINARY, "CL_INVALID_BINARY"));
         errorMap_.insert(paired(CL_OUT_OF_RESOURCES, "CL_OUT_OF_RESOURCES"));
         errorMap_.insert(paired(CL_OUT_OF_HOST_MEMORY, "CL_OUT_OF_HOST_MEMORY"));
-        errorMap_.insert(paired(CL_DEVICE_NOT_FOUND, "CL_DEVICE_NOT_AVAILABLE"));
+        errorMap_.insert(paired(CL_DEVICE_NOT_AVAILABLE, "CL_DEVICE_NOT_AVAILABLE"));
         errorMap_.insert(paired(CL_COMPILER_NOT_AVAILABLE, "CL_COMPILER_NOT_AVAILABLE"));
         errorMap_.insert(paired(CL_MEM_OBJECT_ALLOCATION_FAILURE, "CL_MEM_OBJECT_ALLOCATION_FAILURE"));
         errorMap_.insert(paired(CL_OUT_OF_RESOURCES , "CL_OUT_OF_RESOURCES"));
@@ -89,6 +86,8 @@ public:
      */
     const char* message() const { return errorMap_.find(errCode_)->second; }
 
+
+    ~ClException() { errorMap_.clear(); }
 private:
     /**
      * @brief exceptionName_

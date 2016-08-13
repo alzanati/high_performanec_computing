@@ -53,6 +53,6 @@ const cl::STRING_CLASS ClPlatform::queuryInfo_(cl::Platform platform,
 }
 
 ClPlatform::~ClPlatform() {
-    log_info("ClPlaform destructor");
+
 }
 }
