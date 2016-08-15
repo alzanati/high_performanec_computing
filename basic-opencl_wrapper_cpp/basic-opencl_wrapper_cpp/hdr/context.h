@@ -10,6 +10,8 @@ class ClContext {
 public:
     ClContext();
 
+    ClContext (cl::Context context ) : context_(context) {}
+
     ClContext (const VECTOR_CLASS<cl::Device>& devices,
                cl_context_properties* properities);
 

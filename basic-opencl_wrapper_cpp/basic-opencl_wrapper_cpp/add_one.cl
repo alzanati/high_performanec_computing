@@ -1,5 +1,5 @@
-__kernel void add_one( __global float* buffer )
+__kernel void add_one (__global int* A, __global int* B, global int* C)
 {
 	int index = get_global_id( 0 );
-	buffer[ index ] = index;
+        C[index] = A[index] + B[index];
 }

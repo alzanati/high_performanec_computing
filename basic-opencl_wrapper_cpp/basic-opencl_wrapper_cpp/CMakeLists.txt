@@ -38,6 +38,10 @@ SET(HDR_FILES
     hdr/program.h
     hdr/pexception.h)
 
+# add kernels
+SET(KERNELS
+    add_one.cl)
+
 # set sources
 aux_source_directory(. SRC_LIST)
 
@@ -50,4 +54,5 @@ include_directories(hdr)
 target_link_libraries(${OPENCL_LIBRARY})
 
 # create executable
-add_executable(${PROJECT_NAME} ${SRC_LIST} ${UTILITY_HDR_FILES} ${SRC_FILES} ${HDR_FILES})
+add_executable(${PROJECT_NAME} ${SRC_LIST} ${UTILITY_HDR_FILES}
+    ${SRC_FILES} ${HDR_FILES} ${KERNELS})

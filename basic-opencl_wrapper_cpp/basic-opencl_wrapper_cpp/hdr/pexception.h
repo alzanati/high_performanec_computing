@@ -13,6 +13,7 @@ public:
      */
     ClException (const int& err)
         : errCode_(err) {
+        errorMap_.insert(paired(CL_SUCCESS, "CL_SUCCESS"));
         errorMap_.insert(paired(CL_INVALID_BINARY, "CL_INVALID_BINARY"));
         errorMap_.insert(paired(CL_OUT_OF_RESOURCES, "CL_OUT_OF_RESOURCES"));
         errorMap_.insert(paired(CL_OUT_OF_HOST_MEMORY, "CL_OUT_OF_HOST_MEMORY"));
@@ -86,7 +87,7 @@ public:
      */
     const char* message() const { return errorMap_.find(errCode_)->second; }
 
-
+    /** free errors */
     ~ClException() { errorMap_.clear(); }
 private:
     /**
