@@ -17,7 +17,8 @@ add_compile_options(-std=c++11)
 SET(UTILITY_HDR_FILES
     utility/cmdutility.h
     utility/dbg.h
-    utility/opencl-common.hpp)
+    utility/opencl-common.hpp
+    utility/matrix.h)
 
 # add src files
 SET(SRC_FILES
@@ -40,7 +41,8 @@ SET(HDR_FILES
 
 # add kernels
 SET(KERNELS
-    add_one.cl)
+    kernels/add_one.cl
+    kernels/matrix_multiplication.cl)
 
 # set sources
 aux_source_directory(. SRC_LIST)
@@ -49,6 +51,7 @@ aux_source_directory(. SRC_LIST)
 include_directories(utility)
 include_directories(src)
 include_directories(hdr)
+include_directories(kernels)
 
 #link library
 target_link_libraries(${OPENCL_LIBRARY})

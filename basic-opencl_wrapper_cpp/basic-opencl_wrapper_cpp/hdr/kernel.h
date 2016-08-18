@@ -5,7 +5,9 @@
 
 
 namespace opencl {
+class ClKernel {
 
+};
 }
 
 #endif

@@ -4,8 +4,10 @@
 #include <context.h>
 #include <pexception.h>
 #include <program.h>
+#include <matrix.h>
 
-#define BASE "/projects/image-processing/basic-opencl_wrapper_cpp/basic-opencl_wrapper_cpp/"
+#define BASE "/projects/image-processing/basic-opencl_wrapper_cpp/basic-opencl_wrapper_cpp/kernels/"
+#define N 4
 using utility::color::Code;
 
 template< class T >
@@ -15,23 +17,30 @@ const inline void println (T data, Code code) {
 }
 
 struct data {
-    int A[100];
-    int B[100];
-    int C[100];
+    int A[N * N];
+    int B[N * N];
+    int C[N * N];
 };
 
-int main (int argc, char *argv[]) {
-
+void unit_test (int argc, char** argv) {
     int err;
     cl::STRING_CLASS s = "";
     struct data* input = new struct data;
 
     /* create data */
-    for (int i = 0; i < 100; i++) {
-        input->A[i] = i;
-        input->B[i] = i;
-        input->C[i] = 0;
-    }
+    int a[N * N] = {1, 2, 3, 4,
+                    5, 6, 7, 8,
+                    9, 10, 11, 12,
+                    13, 14, 15, 16};
+    int b[N * N] = {1, 2, 3, 4,
+                    5, 6, 7, 8,
+                    9, 10, 11, 12,
+                    13, 14, 15, 16};
+
+    int c[N * N] = {0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0,
+                    0, 0, 0, 0};
 
     /* platform */
     opencl::ClPlatform platform;
@@ -58,7 +67,7 @@ int main (int argc, char *argv[]) {
     cl::Program myProg;
     opencl::ClProgram* prog;
     try {
-        prog = new opencl::ClProgram (context.getContext(), BASE "add_one.cl");
+        prog = new opencl::ClProgram (context.getContext(), BASE "matrix_multiplication.cl");
         log_info("kernel name: %s", prog->getKernelNames().c_str());
         myProg = prog->getClProgram();
     } catch (exceptions::ClException e) {
@@ -66,32 +75,35 @@ int main (int argc, char *argv[]) {
     }
 
     /* create kernel objects*/
-    cl::Kernel* add_one;
+    cl::Kernel* matrix_multiplication;
     try {
-        add_one = new cl::Kernel(myProg, prog->getKernelNames().c_str(), &err);
-        add_one->getInfo<cl::STRING_CLASS>(CL_KERNEL_FUNCTION_NAME, &s);
+        matrix_multiplication = new cl::Kernel(myProg, "mat_multi_opt", &err);
+        matrix_multiplication->getInfo<cl::STRING_CLASS>(CL_KERNEL_FUNCTION_NAME, &s);
         log_info("%s", s.c_str());
     } catch (exceptions::ClException e) {
         log_err("%s", e.message());
     }
 
     /* create memory objects */
+    int size = 4;
+    matrix_multiplication->setArg(0, sizeof(int), &size);
+
     cl::Buffer bufA( context.getContext(),
                      CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-                     sizeof(input->A), input->A, &err );
-    add_one->setArg(0, bufA);
+                     sizeof(a), a, &err );
+    matrix_multiplication->setArg(1, bufA);
     std::cout << "bufA : ";println(bufA.getInfo<CL_MEM_SIZE>(), Code::FG_PURPPLE);
 
     cl::Buffer bufB( context.getContext(),
                      CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-                     sizeof(input->B), input->B, &err );
-    add_one->setArg(1, bufB);
+                     sizeof(b), b, &err );
+    matrix_multiplication->setArg(2, bufB);
     std::cout << "bufB : ";println(bufA.getInfo<CL_MEM_SIZE>(), Code::FG_PURPPLE);
 
     cl::Buffer bufC( context.getContext(),
                      CL_MEM_WRITE_ONLY | CL_MEM_COPY_HOST_PTR,
-                     sizeof(input->C), input->C, &err );
-    add_one->setArg(2, bufC);
+                     sizeof(c), c, &err );
+    matrix_multiplication->setArg(3, bufC);
     std::cout << "bufC : ";println(bufA.getInfo<CL_MEM_SIZE>(), Code::FG_PURPPLE);
 
     /* create commandqueue */
@@ -100,23 +112,38 @@ int main (int argc, char *argv[]) {
         exceptions::ClException e(err);
         log_err("%s", e.message());
     }
-    cl::NDRange offset(0, 0);
-    cl::NDRange global_size(100, 1);
-    cl::NDRange local_size(100, 1);
 
-    err = cmdQueue.enqueueNDRangeKernel(*add_one, offset, global_size);
+    /* execute program */
+    cl::NDRange offset(0, 0);
+    cl::NDRange global_size(4, 1); // allocate only 4 work-items for optimized kernel
+    err = cmdQueue.enqueueNDRangeKernel(*matrix_multiplication, offset, global_size);
     if (err != CL_SUCCESS) {
         exceptions::ClException e(err);
         log_err("%s", e.message());
     }
-    err = cmdQueue.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(input->C), input->C);
-    for (int i = 0; i < 100; i++) {
-        std::cout << input->C[i] << ", ";
+
+    /* read to cpu */
+    err = cmdQueue.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(c), c);
+    for (int i = 0; i < N*N; i++) {
+        std::cout << c[i] << ", ";
     }
     std::cout << "\n";
 
     /* free system */
-    delete(input);
+}
 
+int main (int argc, char *argv[]) {
+    int a[N * N] = {1, 2, 3, 4,
+                    5, 6, 7, 8,
+                    9, 10, 11, 12,
+                    13, 14, 15, 16};
+    int b[N * N] = {1, 2, 3, 4,
+                    5, 6, 7, 8,
+                    9, 10, 11, 12,
+                    13, 14, 15, 16};
+    calculations::Matrix<int> multi(a, b, N);
+    multi.multiplay();
+    multi.printResult();
+    unit_test(argc, argv);
     return 0;
 }
