@@ -6,7 +6,8 @@
 #include <program.h>
 #include <matrix.h>
 
-#define BASE "/projects/image-processing/basic-opencl_wrapper_cpp/basic-opencl_wrapper_cpp/kernels/"
+#define ROOT "/projects/image-processing/basic-opencl_wrapper_cpp/basic-opencl_wrapper_cpp/"
+#define PATH(x) { ROOT "kernels/" x }
 #define N 4
 using utility::color::Code;
 
@@ -67,7 +68,7 @@ void unit_test (int argc, char** argv) {
     cl::Program myProg;
     opencl::ClProgram* prog;
     try {
-        prog = new opencl::ClProgram (context.getContext(), BASE "matrix_multiplication.cl");
+        prog = new opencl::ClProgram (context.getContext(), PATH("matrix_transpose.cl"));
         log_info("kernel name: %s", prog->getKernelNames().c_str());
         myProg = prog->getClProgram();
     } catch (exceptions::ClException e) {
@@ -77,7 +78,7 @@ void unit_test (int argc, char** argv) {
     /* create kernel objects*/
     cl::Kernel* matrix_multiplication;
     try {
-        matrix_multiplication = new cl::Kernel(myProg, "mat_multi_opt", &err);
+        matrix_multiplication = new cl::Kernel(myProg, "matrix_transpose", &err);
         matrix_multiplication->getInfo<cl::STRING_CLASS>(CL_KERNEL_FUNCTION_NAME, &s);
         log_info("%s", s.c_str());
     } catch (exceptions::ClException e) {
@@ -87,24 +88,27 @@ void unit_test (int argc, char** argv) {
     /* create memory objects */
     int size = 4;
     matrix_multiplication->setArg(0, sizeof(int), &size);
+    matrix_multiplication->setArg(1, sizeof(int), &size);
 
     cl::Buffer bufA( context.getContext(),
                      CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
                      sizeof(a), a, &err );
-    matrix_multiplication->setArg(1, bufA);
+    matrix_multiplication->setArg(2, bufA);
     std::cout << "bufA : ";println(bufA.getInfo<CL_MEM_SIZE>(), Code::FG_PURPPLE);
 
-    cl::Buffer bufB( context.getContext(),
-                     CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
-                     sizeof(b), b, &err );
-    matrix_multiplication->setArg(2, bufB);
-    std::cout << "bufB : ";println(bufA.getInfo<CL_MEM_SIZE>(), Code::FG_PURPPLE);
+//    cl::Buffer bufB( context.getContext(),
+//                     CL_MEM_READ_ONLY | CL_MEM_COPY_HOST_PTR,
+//                     sizeof(b), b, &err );
+//    matrix_multiplication->setArg(2, bufB);
+//    std::cout << "bufB : ";println(bufA.getInfo<CL_MEM_SIZE>(), Code::FG_PURPPLE);
 
     cl::Buffer bufC( context.getContext(),
                      CL_MEM_WRITE_ONLY | CL_MEM_COPY_HOST_PTR,
                      sizeof(c), c, &err );
     matrix_multiplication->setArg(3, bufC);
     std::cout << "bufC : ";println(bufA.getInfo<CL_MEM_SIZE>(), Code::FG_PURPPLE);
+
+//    matrix_multiplication->setArg(4, sizeof(int)*N, NULL);
 
     /* create commandqueue */
     cl::CommandQueue cmdQueue(context.getContext(), device.getDevice(), 0, &err);
@@ -115,7 +119,7 @@ void unit_test (int argc, char** argv) {
 
     /* execute program */
     cl::NDRange offset(0, 0);
-    cl::NDRange global_size(4, 1); // allocate only 4 work-items for optimized kernel
+    cl::NDRange global_size(N, 1); // allocate only 4 work-items for optimized kernel
     err = cmdQueue.enqueueNDRangeKernel(*matrix_multiplication, offset, global_size);
     if (err != CL_SUCCESS) {
         exceptions::ClException e(err);
@@ -123,12 +127,17 @@ void unit_test (int argc, char** argv) {
     }
 
     /* read to cpu */
-    err = cmdQueue.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(c), c);
-    for (int i = 0; i < N*N; i++) {
-        std::cout << c[i] << ", ";
-    }
     std::cout << "\n";
+    err = cmdQueue.enqueueReadBuffer(bufC, CL_TRUE, 0, sizeof(c), c);
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            int index = (i * N + j);
+            std::cout << c[index] << " ";
+        }
+        std::cout << "\n";
+    }
 
+    std::cout << "\n";
     /* free system */
 }
 

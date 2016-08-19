@@ -42,7 +42,8 @@ SET(HDR_FILES
 # add kernels
 SET(KERNELS
     kernels/add_one.cl
-    kernels/matrix_multiplication.cl)
+    kernels/matrix_multiplication.cl
+    kernels/matrix_transpose.cl)
 
 # set sources
 aux_source_directory(. SRC_LIST)
